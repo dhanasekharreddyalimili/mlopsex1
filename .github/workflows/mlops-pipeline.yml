@@ -1,0 +1,23 @@
+name: Azure MLOps Basic Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  train-register:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Train model
+        run: python src/train.py
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Register model in Azure ML
+        run: az ml model create --name houseprice-model --path model.pkl --workspace-name myworkspace --resource-group myrg
