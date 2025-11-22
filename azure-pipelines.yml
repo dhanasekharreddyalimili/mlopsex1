@@ -1,0 +1,26 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- checkout: self
+
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.10'
+
+- script: pip install -r requirements.txt || echo "No requirements file"
+  displayName: Install dependencies
+
+- script: python src/train.py
+  displayName: Train Model
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: '$(AZURE_SERVICE_CONNECTION)'
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      az ml model create --name basicmodel --path model.pkl --workspace-name $(WS) --resource-group $(RG)

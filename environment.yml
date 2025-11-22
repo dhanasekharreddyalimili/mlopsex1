@@ -1,0 +1,5 @@
+name: basic-ml-env
+dependencies:
+  - python=3.10
+  - scikit-learn
+  - pip
